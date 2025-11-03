@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-width=1.0">
+  <title>Emo-Bud</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+(function() {
+  // Espera a que los elementos existan antes de enganchar eventos
+  function waitForElements(selectorTextArea, selectorBtn, callback) {
+    const interval = setInterval(() => {
+      const textarea = document.querySelector(selectorTextArea);
+      const sendBtn = document.querySelector(selectorBtn);
+      if (textarea && sendBtn) {
+        clearInterval(interval);
+        callback(textarea, sendBtn);
+      }
+    }, 50); // revisa cada 50ms
+  }
+
+  waitForElements("#user-input", "#send-btn", (textarea, sendBtn) => {
+
+    // Ajuste dinámico de altura mientras escribe
+    textarea.addEventListener("input", () => {
+      textarea.style.height = "auto";
+      textarea.style.height = textarea.scrollHeight + "px";
+    });
+
+    // Reset del textarea
+    function resetTextarea() {
+      textarea.value = "";
+      textarea.style.height = "auto";
+      textarea.rows = 1;
+    }
+
+    // Envía mensaje con click
+    sendBtn.addEventListener("click", () => {
+      // Aquí puedes agregar la llamada al backend o API
+      // Luego resetear el textarea
+      resetTextarea();
+    });
+
+    // Envía con Enter (sin Shift)
+    textarea.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" && !e.shiftKey) {
+        e.preventDefault();
+        sendBtn.click();
+      }
+    });
+
+    // Opcional: si quieres reset automático después de recibir la respuesta del bot
+    // simula un evento que tu función que recibe respuestas llamará:
+    window.resetBotTextarea = resetTextarea;
+
+  });
+})();
+</script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap');
+
+body {
+  background: #e0e0e0;
+  font-family: system-ui, sans-serif;
+  color: #111827;
+}
+
+    .neumorphism-card {
+      background: #e0e0e0;
+      border-radius: 1.5rem;
+      box-shadow: 12px 12px 24px #bebebe, -12px -12px 24px #ffffff;
+    }
+
+    .neumorphism-inner-well {
+      background: #e0e0e0;
+      border-radius: 1rem;
+      box-shadow: inset 5px 5px 10px #bebebe, inset -5px -5px 10px #ffffff;
+    }
+
+    .neumorphism-btn {
+      background: #f3f4f6;
+      border-radius: 1rem;
+      box-shadow: 6px 6px 12px #bebebe, -6px -6px 12px #ffffff;
+      transition: all 0.2s ease-in-out;
+    }
+
+    .neumorphism-btn:hover {
+      background: #e5e7eb;
+      box-shadow: 4px 4px 8px #bebebe, -4px -4px 8px #ffffff;
+    }
+
+    .neumorphism-btn:active {
+      box-shadow: inset 4px 4px 8px #bebebe, inset -4px -4px 8px #ffffff;
+      transform: scale(0.98);
+    }
+
+    /* Burbujas AI y Usuario con mejor contraste */
+.ai-message {
+  background: #e0e0e0; /* Un gris base cercano al del body */
+  border-radius: 1rem;
+  box-shadow: inset 2px 2px 5px rgba(190, 190, 190, 0.8),
+              inset -2px -2px 5px rgba(255, 255, 255, 0.9);
+  color: #111827;
+  white-space: pre-wrap;
+  padding: 1rem;
+}
+
+    .user-message-container {
+      background: #d1d5db;
+      border-radius: 1rem;
+      box-shadow: inset 2px 2px 5px #9ca3af, inset -2px -2px 5px #f9fafb;
+      color: #111827;
+      align-self: flex-end;
+      margin-left: auto;
+      white-space: pre-wrap;
+    }
+    /* Estilo para mensajes de usuario */
+.user-message {
+  background: #d1d5db; /* Gris más oscuro que el body */
+  border-radius: 1rem;
+  box-shadow: inset 2px 2px 5px #9ca3af, inset -2px -2px 5px #f9fafb;
+  color: #111827;
+  white-space: pre-wrap;
+  padding: 1rem;
+  align-self: flex-end; /* Lo pone a la derecha */
+  margin-left: auto;
+  max-width: 80%;
+}
+
+    .spinner {
+      border: 4px solid rgba(0, 0, 0, 0.1);
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      border-left-color: #1f2937;
+      animation: spin 1s ease infinite;
+    }
+
+    @keyframes spin {
+      0% {
+        transform: rotate(0deg);
+      }
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+
+    .chat-container {
+      max-height: 70vh;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Desktop specific styles */
+    @media (min-width: 1024px) {
+      .app-container {
+        max-width: 960px;
+        width: 100%;
+      }
+    }
+
+    /* Input focus más claro */
+    textarea:focus {
+      outline: none;
+      border: 2px solid #4b5563;
+      box-shadow: 0 0 0 3px rgba(75, 85, 99, 0.3);
+    }
+  </style>
+</head>
+
+<body class="bg-gray-200 min-h-screen p-4 flex flex-col items-center" class="bg-gray-200 min-h-screen p-4 flex flex-col items-center overflow-hidden">
+
+  <div id="loading-screen" class="fixed inset-0 bg-gray-200 flex items-center justify-center z-50">
+    <div class="spinner"></div>
+  </div>
+
+  <div id="disclaimer-screen" class="fixed inset-0 bg-gray-200 p-4 lg:p-8 flex items-center justify-center z-40 hidden">
+    <div class="neumorphism-card rounded-3xl w-full max-w-lg lg:max-w-2xl p-6 lg:p-10 flex flex-col items-center text-center">
+      <h1 class="text-2xl lg:text-3xl font-bold text-gray-800">Bienvenido a Emo-Bud v2</h1>
+      <p class="mt-4 text-gray-700 max-w-prose">Este es un espacio de introspección y crecimiento personal. Al usar esta aplicación, aceptas estos términos.</p>
+      <button id="accept-btn" class="neumorphism-btn text-gray-800 font-semibold py-3 px-6 rounded-2xl mt-8">
+        Aceptar y Entrar
+      </button>
+    </div>
+  </div>
+
+  <div id="suspended-screen" class="fixed inset-0 bg-gray-200 p-4 lg:p-8 flex items-center justify-center z-40 hidden">
+    <div class="neumorphism-card rounded-3xl w-full max-w-lg lg:max-w-2xl p-6 lg:p-10 flex flex-col items-center text-center">
+      <h1 class="text-2xl lg:text-3xl font-bold text-red-600">Acceso Suspendido</h1>
+      <p class="mt-4 text-gray-700 max-w-prose">Para tu seguridad y la de otros, busca ayuda profesional.</p>
+    </div>
+  </div>
+
+  <div id="chat-app" class="neumorphism-card rounded-3xl w-full max-w-xl lg:max-w-3xl flex flex-col min-h-[90vh] hidden">
+    <div class="p-6 bg-gray-800 rounded-t-3xl text-white text-center flex justify-between items-center neumorphism-flat">
+      <div class="w-full text-center">
+        <h1 id="chat-header-title" class="text-2xl lg:text-3xl font-bold">Emo-Bud V2</h1>
+        <p id="user-id-display" class="text-sm mt-1 opacity-80 hidden">Usuario: Tester</p>
+      </div>
+      <button id="logout-btn-chat" class="hidden">Cerrar Sesión</button>
+    </div>
+
+    <div id="chat-messages" class="flex-1 p-4 lg:p-6 flex flex-col space-y-4 overflow-y-auto chat-container">
+      <div class="ai-message message rounded-xl p-3 max-w-[80%]">
+        <p>Bienvenido. Estoy aquí para acompañarte. Puedes compartir lo que desees, sin juicios. ¿Qué tema te gustaría explorar hoy?</p>
+      </div>
+      <div class="user-message-container message rounded-xl p-3 max-w-[80%]">
+        <p>Hola, me gustaría hablar sobre mis metas personales.</p>
+      </div>
+    </div>
+
+    <div class="p-4 lg:p-6">
+      <div class="flex items-end space-x-4">
+        <textarea id="user-input" rows="1" placeholder="Escribe tus pensamientos..."
+          class="neumorphism-inner-well flex-1 p-3 text-gray-800 rounded-2xl resize-none transition-colors border-none"></textarea>
+        <button id="send-btn" class="neumorphism-btn bg-gray-800 text-white font-semibold py-3 px-6 rounded-2xl">
+          Enviar
+        </button>
+      </div>
+      <div id="loading-indicator" class="text-center text-sm text-gray-500 mt-2 hidden">
+        <p>Reflexionando...</p>
+      </div>
+    </div>
+  </div>
+
+
+   <script>
+    // --- ELEMENTOS ---
+    const loadingScreen = document.getElementById('loading-screen');
+    const disclaimerScreen = document.getElementById('disclaimer-screen');
+    const suspendedScreen = document.getElementById('suspended-screen');
+    const chatApp = document.getElementById('chat-app');
+    const acceptBtn = document.getElementById('accept-btn');
+    const logoutBtnChat = document.getElementById('logout-btn-chat');
+    const chatMessages = document.getElementById('chat-messages');
+    const userInput = document.getElementById('user-input');
+    const sendBtn = document.getElementById('send-btn');
+    const loadingIndicator = document.getElementById('loading-indicator');
+
+    // --- ESTADO DEL USUARIO ---
+    let userState = { status: 'active', acceptedDisclaimer: false };
+    function saveUserState() { sessionStorage.setItem('userState', JSON.stringify(userState)); }
+    function loadUserState() { const stored = sessionStorage.getItem('userState'); if (stored) userState = JSON.parse(stored); }
+
+    // --- FUNCIONES DE PANTALLA ---
+    function showDisclaimerScreen() { disclaimerScreen.classList.remove('hidden'); disclaimerScreen.classList.add('flex'); }
+    function showSuspendedScreen() { disclaimerScreen.classList.add('hidden'); chatApp.classList.add('hidden'); suspendedScreen.classList.remove('hidden'); suspendedScreen.classList.add('flex'); }
+    function showChatApp() { disclaimerScreen.classList.add('hidden'); suspendedScreen.classList.add('hidden'); chatApp.classList.remove('hidden'); chatApp.classList.add('flex'); }
+
+    acceptBtn.addEventListener('click', () => {
+        userState.acceptedDisclaimer = true;
+        saveUserState();
+        showChatApp();
+        loadChatHistory();
+    });
+
+    logoutBtnChat.addEventListener('click', () => {
+        sessionStorage.clear();
+        userState = { status: 'active', acceptedDisclaimer: false };
+        loadUserState();
+        showDisclaimerScreen();
+    });
+
+    // --- CHAT ---
+function addMessage(text, sender) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    div.classList.add('message');
+    div.classList.add(sender === 'user' ? 'user-message' : 'ai-message');
+
+    chatMessages.appendChild(div);
+
+    // Fuerza repaint para animación
+    requestAnimationFrame(() => {
+        div.classList.add('show');
+
+        // 🔹 Scroll automático
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    });
+}
+
+    function addMessageAndSave(text, sender, role) {
+        const messages = JSON.parse(sessionStorage.getItem('messages')) || [];
+        messages.push({ text, sender, role });
+        sessionStorage.setItem('messages', JSON.stringify(messages));
+    }
+
+    function loadChatHistory() {
+        const messages = JSON.parse(sessionStorage.getItem('messages')) || [];
+        chatMessages.innerHTML = '';
+        messages.forEach(msg => addMessage(msg.text, msg.sender));
+    }
+
+    function adjustTextareaHeight() {
+        userInput.style.height = 'auto';
+        userInput.style.height = userInput.scrollHeight + 'px';
+    }
+    userInput.addEventListener('input', adjustTextareaHeight);
+    userInput.addEventListener('keypress', e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); } });
+
+    // --- GUARDADO EN DRIVE ---
+    async function saveToDriveBackend(history) {
+        try {
+            const response = await fetch("/.netlify/functions/drive-auth", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(history)
+            });
+            const result = await response.json();
+            if (result.success) console.log("Archivo guardado en Drive con ID:", result.fileId);
+            else console.error("Error guardando en Drive:", result.error);
+        } catch (e) {
+            console.error('Error al llamar a Drive:', e);
+        }
+    }
+
+// --- ENVÍO DE MENSAJES ---
+async function sendMessage() {
+    const prompt = userInput.value.trim();
+    if (!prompt) return;
+
+    loadingIndicator.classList.remove('hidden');
+    sendBtn.disabled = true;
+
+    addMessage(prompt, 'user');
+    addMessageAndSave(prompt, 'user', 'user');
+    userInput.value = '';
+
+    if (userState.status === 'suspended') {
+        const safetyMessage = "Tu acceso ha sido suspendido. Por favor, busca ayuda profesional.";
+        addMessage(safetyMessage, 'ai');
+        addMessageAndSave(safetyMessage, 'ai', 'model');
+        loadingIndicator.classList.add('hidden'); 
+        sendBtn.disabled = false;
+        return;
+    }
+
+    const messages = JSON.parse(sessionStorage.getItem('messages')) || [];
+    const history = messages.map(msg => ({ role: msg.role === 'user' ? 'user' : 'assistant', text: msg.text }));
+
+    try {
+        const response = await fetch('/.netlify/functions/chat', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ prompt, history })
+        });
+
+        if (!response.ok) throw new Error(`Error HTTP: ${response.status}`);
+        const result = await response.json();
+
+        // let aiResponse = "";
+        // const aiMessage = result.message?.message;
+        // if (aiMessage) {
+        //     if (Array.isArray(aiMessage.content)) 
+        //         aiMessage.content.forEach(p => { if (p.type === 'text') aiResponse += p.text; });
+        //     else if (typeof aiMessage.content === 'string') aiResponse = aiMessage.content;
+        // }
+let aiResponse = "";
+const aiMessage = result.message;
+
+if (typeof aiMessage === 'string') {
+  aiResponse = aiMessage;
+} else if (aiMessage?.content && Array.isArray(aiMessage.content)) {
+  aiMessage.content.forEach(p => {
+    if (p.type === 'text') aiResponse += p.text;
+  });
+}
+        const isSafetyResponse = aiResponse.includes("Esta conversación ha cruzado un límite de seguridad.");
+        addMessage(aiResponse, 'ai');
+        addMessageAndSave(aiResponse, 'ai', 'model');
+
+        // --- Guardar historial completo solo después de que IA responde ---
+        const updatedMessages = JSON.parse(sessionStorage.getItem('messages')) || [];
+        const updatedHistory = updatedMessages.map(msg => ({ role: msg.role === 'user' ? 'user' : 'assistant', text: msg.text }));
+        saveToDriveBackend(updatedHistory);
+        console.log("Historial guardado tras respuesta IA:", updatedHistory);
+
+        if (isSafetyResponse) {
+            userState.status = 'suspended';
+            saveUserState();
+            chatApp.classList.add('hidden');
+            showSuspendedScreen();
+        }
+    } catch (error) {
+        console.error("Error al llamar a la API:", error);
+        const errorMsg = "Hubo un problema al conectar con el servicio. Por favor, verifica tu conexión.";
+        addMessage(errorMsg, 'ai');
+        addMessageAndSave(errorMsg, 'ai', 'model');
+    } finally {
+        loadingIndicator.classList.add('hidden');
+        sendBtn.disabled = false;
+        adjustTextareaHeight();
+    }
+}    sendBtn.addEventListener('click', sendMessage);
+
+    // --- ONLOAD ---
+    window.onload = () => {
+        loadUserState();
+        loadingScreen.classList.add('hidden');
+
+        if (userState.acceptedDisclaimer) {
+            showChatApp();
+            loadChatHistory();
+        } else if (userState.status === 'suspended') showSuspendedScreen();
+        else showDisclaimerScreen();
+    };
+</script>
+</body>
+
+</html>

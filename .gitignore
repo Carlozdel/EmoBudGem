@@ -1,0 +1,30 @@
+# dependencias y build
+node_modules/
+dist/
+build/
+.cache/
+.tmp/
+
+# netlify local
+.netlify/
+netlify/*.json
+
+# env & claves
+.env
+.env.*
+*.key
+*.pem
+*.p12
+*.cert
+*.crt
+
+# sistema/editor
+.DS_Store
+.vscode/
+.idea/
+*.log
+
+# archivos accidentales
+*token*
+*secret*
+emobudapi.txt
