@@ -1,10 +1,19 @@
 <!DOCTYPE html>
 <html lang="es">
+ 
 <head>
+  <base href="/" />
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-width=1.0">
-  <title>Emo-Bud</title>
+  <title>UITO AGENTIC</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <!-- <script   src="chat"></script> -->  <script>
+    document.getElementById('btn').addEventListener('click', async () => {
+      const res = await fetch('/.netlify/functions/chat', { method: 'POST' });
+      const data = await res.text();
+      document.getElementById('output').textContent = data;
+    });
+  </script>
   <script>
 (function() {
   // Espera a que los elementos existan antes de enganchar eventos
@@ -177,7 +186,7 @@ body {
 
   <div id="disclaimer-screen" class="fixed inset-0 bg-gray-200 p-4 lg:p-8 flex items-center justify-center z-40 hidden">
     <div class="neumorphism-card rounded-3xl w-full max-w-lg lg:max-w-2xl p-6 lg:p-10 flex flex-col items-center text-center">
-      <h1 class="text-2xl lg:text-3xl font-bold text-gray-800">Bienvenido a Emo-Bud v2</h1>
+      <h1 class="text-2xl lg:text-3xl font-bold text-gray-800">Bienvenido a UITO Agentic</h1>
       <p class="mt-4 text-gray-700 max-w-prose">Este es un espacio de introspección y crecimiento personal. Al usar esta aplicación, aceptas estos términos.</p>
       <button id="accept-btn" class="neumorphism-btn text-gray-800 font-semibold py-3 px-6 rounded-2xl mt-8">
         Aceptar y Entrar
@@ -195,7 +204,7 @@ body {
   <div id="chat-app" class="neumorphism-card rounded-3xl w-full max-w-xl lg:max-w-3xl flex flex-col min-h-[90vh] hidden">
     <div class="p-6 bg-gray-800 rounded-t-3xl text-white text-center flex justify-between items-center neumorphism-flat">
       <div class="w-full text-center">
-        <h1 id="chat-header-title" class="text-2xl lg:text-3xl font-bold">Emo-Bud V2</h1>
+        <h1 id="chat-header-title" class="text-2xl lg:text-3xl font-bold">UITO Agentic</h1>
         <p id="user-id-display" class="text-sm mt-1 opacity-80 hidden">Usuario: Tester</p>
       </div>
       <button id="logout-btn-chat" class="hidden">Cerrar Sesión</button>
@@ -307,6 +316,8 @@ function addMessage(text, sender) {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(history)
             });
+  //             .then(res => res.json())
+  // .then(data => console.log(data.message));
             const result = await response.json();
             if (result.success) console.log("Archivo guardado en Drive con ID:", result.fileId);
             else console.error("Error guardando en Drive:", result.error);
