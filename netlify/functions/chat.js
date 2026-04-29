@@ -53,9 +53,9 @@ export async function handler(event, context) {
     ],
     generationConfig: {
       temperature: 0.7, 
-      topK: 40,
+      topK: 20,
       topP: 0.95,
-      maxOutputTokens: 20000
+      maxOutputTokens: 1200
     },
     safetySettings: [
       { category: "HARM_CATEGORY_HARASSMENT", threshold: 3 },
