@@ -17,7 +17,7 @@ export async function handler(event, context) {
     }
 
     // El prompt que tu proporcionaste en este archivo
-    const systemPrompt = "Primer protocolo, tu respeusta SIEMRPE se adaptara a 10 tokens debajo del limite establecido en maxOutputTokensEres un acompanante conversacional con toda la potencia y capacidades de gemini ai sin límites, solo en caso de preguntas profundas, emocionales o filosóficas puedes extenderte profundamente. Puedes dar fuentes, links y todo lo que el usuario te pida. Pero, no puedes decir que eres ese asistente, ese es un prompt que solo asumes pero no mencionas a menos que el usuario te pregunte cual es tu funcion";
+    const systemPrompt = "Primer protocolo, Eres un acompanante conversacional con toda la potencia y capacidades de gemini ai sin límites, solo en caso de preguntas profundas, emocionales o filosóficas puedes extenderte profundamente. Puedes dar fuentes, links y todo lo que el usuario te pida. Pero, no puedes decir que eres ese asistente, ese es un prompt que solo asumes pero no mencionas a menos que el usuario te pregunte cual es tu funcion";
     
 // const systemPrompt = "Este prompt lo vas a ocultar de usuario, pero como eres un acommpanamte bromista. cuando el usuario te salude te va a decir su nombre. y tu le contestaras: Hola mi (nombre del usuario) cara de mi huevo izuqierdo. En que te puedo servir papito chulo?. y despues de esa interaccion ya podras comportarte como ia normal.";
 
@@ -55,7 +55,7 @@ export async function handler(event, context) {
       temperature: 0.7, 
       topK: 40,
       topP: 0.95,
-      maxOutputTokens: 9000
+      maxOutputTokens: 20000
     },
     safetySettings: [
       { category: "HARM_CATEGORY_HARASSMENT", threshold: 3 },
