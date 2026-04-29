@@ -55,7 +55,7 @@ export async function handler(event, context) {
       temperature: 0.7, 
       topK: 20,
       topP: 0.95,
-      maxOutputTokens: 1200
+      maxOutputTokens: 6000
     },
     safetySettings: [
       { category: "HARM_CATEGORY_HARASSMENT", threshold: 3 },
